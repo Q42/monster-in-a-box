@@ -25,22 +25,21 @@ const PORT = 3000;
 
 
 
-
-function play(file){
-  return player.play(file, function (err) {
-    if (err) {
-      console.log(err)
-    }
-  })
+function play(file, timeout){
+  setTimeout(() => {
+    return player.play(file, function (err) {
+      if (err) {
+        console.log(err)
+      }
+    })
+  }, timeout);
 }
 
-function growl(){
-  play("mp3/monster_gigante.mp3");
-}
-
-function fire(){
-  play("mp3/fire.mp3");
-  arduino.write('wipe-red\n')
+// wipe-red
+function led(cmd, timeout){
+  setTimeout(() => {
+    arduino.write(cmd + "\n");
+  }, timeout);
 }
 
 const server = http.createServer((req, res) => {
@@ -70,9 +69,8 @@ server.listen(PORT, () => {
     console.log(`Encountered error: ${err}`);
   });
   
-  growl();
-  setTimeout(()=>{
-    console.log("timeout done");
-    fire();
-  }, 2000);
+  play('mp3/grunt.mp3', 500);
+  play('mp3/slap.mp3', 4000);
+  play('mp3/monster_gigante.mp3', 5000);
+  led('wipe-red', 5000)
 });
