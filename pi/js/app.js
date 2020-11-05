@@ -1,6 +1,19 @@
 const http = require('http');
 const playSound = require('play-sound');
 // var GrovePi = require('node-grovepi').GrovePi
+const SerialPort = require('serialport')
+const Readline = require('@serialport/parser-readline')
+
+
+
+const arduino = new SerialPort('/dev/ttyUSB0', { baudRate: 9600 })
+
+// parser.on('data', line => console.log(`> ${line}`))
+
+// setTimeout(() => {
+//   console.log('sent wipe-red');
+// },5000)
+
 var player = require('play-sound')(opts = { player: 'mpg123' });
 // https://github.com/shime/play-sound
 
@@ -25,7 +38,9 @@ function growl(){
 
 function fire(){
   play("mp3/fire.mp3");
+  arduino.write('wipe-red\n')
 }
+
 const server = http.createServer((req, res) => {
   // $ mplayer can not 
 
@@ -58,5 +73,5 @@ server.listen(PORT, () => {
   setTimeout(()=>{
     console.log("timeout done");
     fire();
-  }, 1000);
+  }, 2000);
 });
