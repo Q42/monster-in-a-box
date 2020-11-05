@@ -6,10 +6,8 @@ const SerialPort = require('serialport')
 
 const arduino = new SerialPort('/dev/ttyUSB0', { baudRate: 9600 })
 
-var player = require('play-sound')(opts = { player: 'mpg123' });
-// https://github.com/shime/play-sound
+var player = playSound(opts = { player: 'mpg123' });
 
-// var firebase = require('firebase');
 var firebaseConfig = {
   apiKey: "AIzaSyBDVrJK2AS0wvEqbEDXYPgTcRfgCSvK_ow",
   authDomain: "monster-in-a-box.firebaseapp.com",
@@ -23,8 +21,9 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-
 const PORT = 3000;
+
+
 
 
 function play(file){
@@ -36,11 +35,7 @@ function play(file){
 }
 
 function growl(){
-  return player.play('mp3/monster_gigante.mp3', function (err) {
-    if (err) {
-      console.log(err)
-    }
-  })
+  play("mp3/monster_gigante.mp3");
 }
 
 function fire(){
@@ -49,29 +44,11 @@ function fire(){
 }
 
 const server = http.createServer((req, res) => {
-  // $ mplayer can not 
+  console.log('start')
 
-  
-    // player.play(
-    //   'mp3/old-car-engine_daniel_simion.mp3',
-    //   (err, data) =>console.log(err, data)
-    // );
-    console.log('start')
-    // { mpg123: ['-volume', 50] /* lower volume for afplay on OSX */ }
-  
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello dev.to!\n'); 
-
-  // setTimeout(() => {
-  //   p.kill();
-  //   player.play('mp3/MONSTER_Echo.mp3',
-  //     function (err) {
-  //       console.log(err);
-  //     }
-  //   );
-  // }, 2000)
-
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello dev.to!\n'); 
 });
 
 server.listen(PORT, () => {
