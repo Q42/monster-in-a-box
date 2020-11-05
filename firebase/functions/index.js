@@ -10,11 +10,12 @@ exports.addMessage = functions.https.onRequest(async (req, res) => {
   }
 
   const user = body.user;
-  const doc = { body, timestamp: (+new Date()) };
-
   if (!user) {
     return res.status(400).json({ message: "missing property 'user' containing userid (=monsterid)" });
   }
+
+  const doc = Object.assign({}, body, { timestamp: (+new Date()) });
+  delete doc.user;
 
   console.log(`pushing to /monsters/${user}/events: ${JSON.stringify(doc)}`);
   const writeResult = await admin.firestore().collection("monsters").doc(user).collection('events').add(doc);
