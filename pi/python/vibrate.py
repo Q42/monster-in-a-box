@@ -12,7 +12,7 @@ while True:
         # Start vibrating for 1 second
         grovepi.digitalWrite(vibration_motor,1)
         print ('start')
-        time.sleep(1)
+        time.sleep(5)
 
         # Stop vibrating for 1 second, then repeat
         grovepi.digitalWrite(vibration_motor,0)
