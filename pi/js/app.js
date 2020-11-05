@@ -2,14 +2,14 @@ const firebase = require("firebase/app");
 require("firebase/firestore");
 const http = require('http');
 const playSound = require('play-sound');
-const SerialPort = require('serialport')
+const SerialPort = require('serialport');
+const Confetti = require('../../confetti/Confetti.js');
 
 const arduino = new SerialPort('/dev/ttyUSB0', { baudRate: 9600 })
 
 var player = require('play-sound')(opts = { player: 'mpg123' });
 // https://github.com/shime/play-sound
 
-// var firebase = require('firebase');
 var firebaseConfig = {
   apiKey: "AIzaSyBDVrJK2AS0wvEqbEDXYPgTcRfgCSvK_ow",
   authDomain: "monster-in-a-box.firebaseapp.com",
@@ -23,6 +23,8 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// Initialise the confetti object.
+const confetti = new Confetti();
 
 const PORT = 3000;
 
@@ -46,6 +48,20 @@ function growl(){
 function fire(){
   play("mp3/fire.mp3");
   arduino.write('wipe-red\n')
+}
+
+function fireConfetti() {
+  console.log('firing confetti');
+  confetti.startFire();
+  setTimeout(() => {
+    console.log('standing down');
+    confetti.stopFire();
+  }, 3000);
+}
+
+function borrelFondleParrot() {
+  console.log('A parrot tweets #metoo');
+  fireConfetti();
 }
 
 const server = http.createServer((req, res) => {
@@ -80,15 +96,21 @@ server.listen(PORT, () => {
   // TODO: insert doc in monsters collection.
   
   // TODO: don't hardcode monster ID.
-  const monster = db.collection('monsters').doc('XifqFglx6OzCOmm8wgYa').collection('events');
+  const monster = db.collection('monsters').doc('Arian').collection('events');
 
-  monster.onSnapshot(event => {
-    if (event.empty) {
+  monster.onSnapshot(evnt => {
+    if (evnt.empty) {
       console.log(`No event received`);
       return;
     }
+
+    const event = evnt.docs[0].data();
     
-    console.log(`Received monster snapshot: ${JSON.stringify(event.docs[0].data())}`);
+    console.log(`Received monster snapshot: ${JSON.stringify(event)}`);
+
+    if (event.type === "fondleParrot") {
+      borrelFondleParrot();
+    }
   }, err => {
     console.log(`Encountered error: ${err}`);
   });
