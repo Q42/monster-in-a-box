@@ -2,8 +2,9 @@
 
 String received;
 
-#define NUM_LIGHTS 118
+#define NUM_LIGHTS 150
 #define LIGHTS_PIN 6
+#define MIRROR 37 
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LIGHTS, LIGHTS_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -14,8 +15,7 @@ void setup() {
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 
-//  colorWipe(strip.Color(255, 0, 0), 1); // Red
-//  colorWipe(strip.Color(0, 0, 0), 1); // Off
+  run("wipe-red");
 }
 
 void loop() {
@@ -37,6 +37,7 @@ void run(String cmd) {
     colorWipe(strip.Color(255, 0, 0), 1); // Red
     colorWipe(strip.Color(0, 0, 0), 1); // Off
   }
+
 }
 
 // Fill the dots one after the other with a color

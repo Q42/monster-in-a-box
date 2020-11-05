@@ -7,8 +7,7 @@ const Confetti = require('../../confetti/Confetti.js');
 
 const arduino = new SerialPort('/dev/ttyUSB0', { baudRate: 9600 })
 
-var player = require('play-sound')(opts = { player: 'mpg123' });
-// https://github.com/shime/play-sound
+var player = playSound(opts = { player: 'mpg123' });
 
 var firebaseConfig = {
   apiKey: "AIzaSyBDVrJK2AS0wvEqbEDXYPgTcRfgCSvK_ow",
@@ -29,25 +28,22 @@ const confetti = new Confetti();
 const PORT = 3000;
 
 
-function play(file){
-  return player.play(file, function (err) {
-    if (err) {
-      console.log(err)
-    }
-  })
+
+function play(file, timeout){
+  setTimeout(() => {
+    return player.play(file, function (err) {
+      if (err) {
+        console.log(err)
+      }
+    })
+  }, timeout);
 }
 
-function growl(){
-  return player.play('mp3/monster_gigante.mp3', function (err) {
-    if (err) {
-      console.log(err)
-    }
-  })
-}
-
-function fire(){
-  play("mp3/fire.mp3");
-  arduino.write('wipe-red\n')
+// wipe-red
+function led(cmd, timeout){
+  setTimeout(() => {
+    arduino.write(cmd + "\n");
+  }, timeout);
 }
 
 function fireConfetti() {
@@ -65,29 +61,11 @@ function borrelFondleParrot() {
 }
 
 const server = http.createServer((req, res) => {
-  // $ mplayer can not 
+  console.log('start')
 
-  
-    // player.play(
-    //   'mp3/old-car-engine_daniel_simion.mp3',
-    //   (err, data) =>console.log(err, data)
-    // );
-    console.log('start')
-    // { mpg123: ['-volume', 50] /* lower volume for afplay on OSX */ }
-  
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello dev.to!\n'); 
-
-  // setTimeout(() => {
-  //   p.kill();
-  //   player.play('mp3/MONSTER_Echo.mp3',
-  //     function (err) {
-  //       console.log(err);
-  //     }
-  //   );
-  // }, 2000)
-
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello dev.to!\n'); 
 });
 
 server.listen(PORT, () => {
@@ -115,9 +93,8 @@ server.listen(PORT, () => {
     console.log(`Encountered error: ${err}`);
   });
   
-  growl();
-  setTimeout(()=>{
-    console.log("timeout done");
-    fire();
-  }, 2000);
+  play('mp3/grunt.mp3', 500);
+  play('mp3/slap.mp3', 4000);
+  play('mp3/monster_gigante.mp3', 5000);
+  led('wipe-red', 5000)
 });
