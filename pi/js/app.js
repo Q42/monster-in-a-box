@@ -1,13 +1,8 @@
 const firebase = require("firebase/app");
 require("firebase/firestore");
 const http = require('http');
-const playSound = require('play-sound');
-const SerialPort = require('serialport');
-const Confetti = require('../../confetti/Confetti.js');
+const Events = require('./events.js');
 
-const arduino = new SerialPort('/dev/ttyUSB0', { baudRate: 9600 })
-
-var player = playSound(opts = { player: 'mpg123' });
 
 var firebaseConfig = {
   apiKey: "AIzaSyBDVrJK2AS0wvEqbEDXYPgTcRfgCSvK_ow",
@@ -22,42 +17,20 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Initialise the confetti object.
-const confetti = new Confetti();
-
 const PORT = 3000;
 
+// Initialise Events
+const events = new Events();
 
+async function checkMonsterDocEntry(monsterID) {
+  console.log('Checking existence of monster doc entry');
+  const monsterRef = db.collection('monsters').doc(monsterID);
+  const monsterDoc = await monsterRef.get();
 
-function play(file, timeout){
-  setTimeout(() => {
-    return player.play(file, function (err) {
-      if (err) {
-        console.log(err)
-      }
-    })
-  }, timeout);
-}
-
-// wipe-red
-function led(cmd, timeout){
-  setTimeout(() => {
-    arduino.write(cmd + "\n");
-  }, timeout);
-}
-
-function fireConfetti() {
-  console.log('firing confetti');
-  confetti.startFire();
-  setTimeout(() => {
-    console.log('standing down');
-    confetti.stopFire();
-  }, 3000);
-}
-
-function borrelFondleParrot() {
-  console.log('A parrot tweets #metoo');
-  fireConfetti();
+  if (!monsterDoc.exists) {
+    console.log('No monster document yet. Creating one now...');
+    db.collection('monsters').doc(monsterID).set({});
+  } 
 }
 
 const server = http.createServer((req, res) => {
@@ -71,10 +44,11 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}.`);
 
-  // TODO: insert doc in monsters collection.
-  
-  // TODO: don't hardcode monster ID.
-  const monster = db.collection('monsters').doc('Arian').collection('events');
+  // Check if db entries exist. If not, create them.
+  const monsterID = 'Arian';
+  checkMonsterDocEntry(monsterID);
+
+  const monster = db.collection('monsters').doc(monsterID).collection('events');
 
   monster.onSnapshot(evnt => {
     if (evnt.empty) {
@@ -87,14 +61,14 @@ server.listen(PORT, () => {
     console.log(`Received monster snapshot: ${JSON.stringify(event)}`);
 
     if (event.type === "fondleParrot") {
-      borrelFondleParrot();
+      events.borrelFondleParrot();
     }
   }, err => {
     console.log(`Encountered error: ${err}`);
   });
   
-  play('mp3/grunt.mp3', 500);
-  play('mp3/slap.mp3', 4000);
-  play('mp3/monster_gigante.mp3', 5000);
-  led('wipe-red', 5000)
+  // play('mp3/grunt.mp3', 500);
+  events.play('mp3/slap.mp3', 4000);
+  // play('mp3/monster_gigante.mp3', 5000);
+  events.led('wipe-red', 5000);
 });
