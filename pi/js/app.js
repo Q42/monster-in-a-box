@@ -1,21 +1,28 @@
+const firebase = require("firebase/app");
+require("firebase/firestore");
 const http = require('http');
 const playSound = require('play-sound');
-// var GrovePi = require('node-grovepi').GrovePi
 const SerialPort = require('serialport')
-const Readline = require('@serialport/parser-readline')
-
-
 
 const arduino = new SerialPort('/dev/ttyUSB0', { baudRate: 9600 })
 
-// parser.on('data', line => console.log(`> ${line}`))
-
-// setTimeout(() => {
-//   console.log('sent wipe-red');
-// },5000)
-
 var player = require('play-sound')(opts = { player: 'mpg123' });
 // https://github.com/shime/play-sound
+
+// var firebase = require('firebase');
+var firebaseConfig = {
+  apiKey: "AIzaSyBDVrJK2AS0wvEqbEDXYPgTcRfgCSvK_ow",
+  authDomain: "monster-in-a-box.firebaseapp.com",
+  databaseURL: "https://monster-in-a-box.firebaseio.com",
+  projectId: "monster-in-a-box",
+  storageBucket: "monster-in-a-box.appspot.com",
+  messagingSenderId: "1033659239426",
+  appId: "1:1033659239426:web:8bd2748fe715baab84ab1b",
+  measurementId: "G-SZZP4B9E1D"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 
 const PORT = 3000;
 
@@ -69,6 +76,23 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}.`);
+
+  // TODO: insert doc in monsters collection.
+  
+  // TODO: don't hardcode monster ID.
+  const monster = db.collection('monsters').doc('XifqFglx6OzCOmm8wgYa').collection('events');
+
+  monster.onSnapshot(event => {
+    if (event.empty) {
+      console.log(`No event received`);
+      return;
+    }
+    
+    console.log(`Received monster snapshot: ${JSON.stringify(event.docs[0].data())}`);
+  }, err => {
+    console.log(`Encountered error: ${err}`);
+  });
+  
   growl();
   setTimeout(()=>{
     console.log("timeout done");
