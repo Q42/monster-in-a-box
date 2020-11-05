@@ -1,4 +1,5 @@
 const http = require('http');
+const playSound = require('play-sound');
 // var GrovePi = require('node-grovepi').GrovePi
 //var player = require('play-sound')(opts = { player: 'mpg123' });
 // https://github.com/shime/play-sound
@@ -8,6 +9,26 @@ var serviceAccount = require("./serviceaccount.json");
 
 const PORT = 3000;
 
+
+function play(file){
+  return player.play(file, function (err) {
+    if (err) {
+      console.log(err)
+    }
+  })
+}
+
+function growl(){
+  return player.play('mp3/monster_gigante.mp3', function (err) {
+    if (err) {
+      console.log(err)
+    }
+  })
+}
+
+function fire(){
+  play("mp3/fire.mp3");
+}
 const server = http.createServer((req, res) => {
   // $ mplayer can not 
 
@@ -18,15 +39,10 @@ const server = http.createServer((req, res) => {
     // );
     console.log('start')
     // { mpg123: ['-volume', 50] /* lower volume for afplay on OSX */ }
-  const p = player.play('mp3/old-car-engine_daniel_simion.mp3', function (err) {
-    if (err) {
-      console.log(err)
-    }
-
+  
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello dev.to!\n');
-  })
+    res.end('Hello dev.to!\n'); 
 
   // setTimeout(() => {
   //   p.kill();
@@ -64,4 +80,10 @@ server.listen(PORT, () => {
   }, err => {
     console.log(`Encountered error: ${err}`);
   });
+  
+  growl();
+  setTimeout(()=>{
+    console.log("timeout done");
+    fire();
+  }, 1000);
 });
