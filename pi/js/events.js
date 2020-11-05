@@ -33,7 +33,7 @@ class Events {
     setTimeout(() => {
       console.log('standing down');
       this.confetti.stopFire();
-    }, 3000);
+    }, 6000);
   }
   
   borrelFondleParrot() {

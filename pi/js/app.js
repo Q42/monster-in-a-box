@@ -2,6 +2,7 @@ const firebase = require("firebase/app");
 require("firebase/firestore");
 const http = require('http');
 const Events = require('./events.js');
+const dbManager = require('./dbManager.js');
 
 
 var firebaseConfig = {
@@ -31,6 +32,14 @@ async function checkMonsterDocEntry(monsterID) {
     console.log('No monster document yet. Creating one now...');
     db.collection('monsters').doc(monsterID).set({});
   } 
+
+  const oldEventsRef = db.collection('monsters').doc(monsterID).collection('events');
+  const oldEvents = await oldEventsRef.get();
+  const batch = db.batch();
+  oldEvents.docs.forEach(async (event) => {
+    await batch.delete(event.ref);
+  });
+  await batch.commit();
 }
 
 const server = http.createServer((req, res) => {
@@ -41,12 +50,12 @@ const server = http.createServer((req, res) => {
   res.end('Hello dev.to!\n'); 
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, async() => {
   console.log(`Server running on port ${PORT}.`);
 
   // Check if db entries exist. If not, create them.
   const monsterID = 'Arian';
-  checkMonsterDocEntry(monsterID);
+  await checkMonsterDocEntry(monsterID);
 
   const monster = db.collection('monsters').doc(monsterID).collection('events');
 
@@ -67,8 +76,8 @@ server.listen(PORT, () => {
     console.log(`Encountered error: ${err}`);
   });
   
-  // play('mp3/grunt.mp3', 500);
+  events.play('mp3/grunt.mp3', 500);
   events.play('mp3/slap.mp3', 4000);
-  // play('mp3/monster_gigante.mp3', 5000);
+  events.play('mp3/monster_gigante.mp3', 5000);
   events.led('wipe-red', 5000);
 });
