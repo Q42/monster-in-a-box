@@ -17,7 +17,7 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
 exports.addMessage = functions.https.onRequest(async (req, res) => {
   // Grab the text parameter.
   const original = req.query.text;
-  const doc = {original};
+  const doc = { original, date: (+new Date()) };
   // Push the new message into Cloud Firestore using the Firebase Admin SDK.
   const writeResult = await admin.firestore().collection('messages').add(doc);
   // Send back a message that we've succesfully written the message
