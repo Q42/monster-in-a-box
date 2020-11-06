@@ -6,6 +6,7 @@ class Events {
   constructor(monsterID) {
     // Initialise the confetti object.
     this.playing = null;
+    this.end = false;
     this.joined = false;
     this.monsterID = monsterID;
     this.confetti = null;
@@ -39,14 +40,14 @@ class Events {
         }
         that.loop();
       })
-    }, timeout);
+    }, timeout || 0);
   }
   
   // wipe-red
   led(cmd, timeout){
     setTimeout(() => {
       this.arduino.write(cmd + "\n");
-    }, timeout);
+    }, timeout || 0);
   }
 
   /************************
@@ -74,14 +75,17 @@ class Events {
     console.log('A parrot tweets #metoo');
     this.play(`mp3/${this.monsterID} parrot.mp3`);
     // if (this.arduino) {
-    //   this.led("wipe-out");
+    this.led("wipe-red", 500);
     // }
   }
 
   boot() {
     this.play(`mp3/${this.monsterID} boot.mp3`, 500);
     if (this.monsterID === "Korjan") {
-      this.led('wipe-red', 6000);
+      this.led("wipe-red", 1500);
+      this.led('wipe-red', 4000);
+      this.led("wipe-red", 6500);
+      this.led("wipe-red", 9000);
     }
     if (this.monsterID === "Arian") {
     }
@@ -105,6 +109,7 @@ class Events {
       const file = `mp3/${this.monsterID} idle${this.joined ? "-joined" : ""}.mp3`;
       console.log('play idle ' + file);
       // this.playing.kill();
+      this.led("wipe-red", 1500);
       this.playing = this.player.play(file, function (err) {
         if (err) {
           console.log(err)
@@ -119,7 +124,13 @@ class Events {
     this.play(`mp3/${this.monsterID} highnote.mp3`, 2000);
     this.play(`mp3/${this.monsterID} party.mp3`);
     if (this.monsterID === "Korjan") {
-      this.led("wipe-out");
+      this.led("wipe-red", 2000);
+      this.led("wipe-red", 4000);
+      this.led("wipe-red", 6000);
+      this.led("wipe-red", 8000);
+      this.led("wipe-red", 10000);
+      this.led("wipe-red", 12000);
+      this.led("wipe-red", 14000);
     }
     if (this.monsterID === "Arian") {
       this.fireConfetti();
@@ -131,11 +142,13 @@ class Events {
 
   borrelOtherUserJoined() {
     this.play(`mp3/${this.monsterID} announcement.mp3`);
+    this.led("wipe-red", 1000);
   }
 
   borrelUserJoined() {
     this.joined = true;
     this.play(`mp3/${this.monsterID} join.mp3`);
+    this.led("wipe-red", 1000);
   }
 }
 
