@@ -15,7 +15,7 @@ void setup() {
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 
-  run("wipe-red");
+//  run("wipe-red");
 }
 
 void loop() {
@@ -25,10 +25,6 @@ void loop() {
     Serial.print("You sent me: ");
     Serial.println(received);
     run(received);
-//    if (received == "wipe-red") {
-//      colorWipe(strip.Color(255, 0, 0), 1); // Red
-//      colorWipe(strip.Color(0, 0, 0), 1); // Off
-//    }
   }
 }
 
