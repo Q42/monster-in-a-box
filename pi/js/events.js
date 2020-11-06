@@ -36,9 +36,9 @@ class Events {
    ************************/
 
   wakeUp() {
-    this.play('mp3/grunt.mp3', 500);
+    // this.play('mp3/grunt.mp3', 500);
     this.play('mp3/slap.mp3', 4000);
-    this.play('mp3/monster_gigante.mp3', 5000);
+    // this.play('mp3/monster_gigante.mp3', 5000);
     this.led('wipe-red', 5000);
   }
   
