@@ -66,15 +66,28 @@ server.listen(PORT, async() => {
       return;
     }
 
-    const event = evnt.docs[0].data();
+    const event = evnt.docs.sort((doc1, doc2) => {
+      return doc1.data().timestamp - doc2.data().timestamp;
+    })[evnt.size - 1].data();
     
     console.log(`Received monster snapshot: ${JSON.stringify(event)}`);
 
     if (event.type === "fondleParrot") {
       events.borrelFondleParrot();
     }
+    else if (event.type === "userJoined") {
+      if (event.newUser === monsterID) {
+        events.borrelUserJoined();
+      } else {
+        events.borrelOtherUserJoined();
+      }
+    } else if (event.type === 'fatLadyFalls') {
+      events.borrelFatLadyFalls();
+    } else {
+      console.warn(`received unknown event - type: ${event.type}`);
+    }
   }, err => {
-    console.log(`Encountered error: ${err}`);
+    console.warn(`Encountered error: ${err}`);
   });
   
   events.boot();

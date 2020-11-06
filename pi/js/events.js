@@ -18,18 +18,21 @@ class Events {
     }
   }
 
-  play(file, length, timeout){
+  /***********************
+   ** low-level actions **
+   ***********************/
+
+  play(file, timeout){
     this.clearLoop();
     const that = this;
     setTimeout(() => {
       // this.playing.kill();
+      console.log('play ' + file);
       this.playing = this.player.play(file, function (err) {
         if (err) {
           console.log(err)
         }
         that.loop();
-        // console.log('will start loop in ' + length)
-        // setTimeout(() => that.loop(), length);
       })
     }, timeout);
   }
@@ -40,7 +43,11 @@ class Events {
       this.arduino.write(cmd + "\n");
     }, timeout);
   }
-  
+
+  /************************
+   ** high-level actions **
+   ************************/
+
   fireConfetti() {
     this.clearLoop();
     console.log('begin firing confetti');
@@ -51,28 +58,25 @@ class Events {
       this.loop();
     }, 6000);
   }
+
+  /*******************
+   ** borrel events **
+   *******************/
   
-  fondleParrot() {
+  borrelFondleParrot() {
     console.log('A parrot tweets #metoo');
-    if (this.confetti) {
-      this.fireConfetti();
-    }
     if (this.arduino) {
       this.led("wipe-out");
     }
   }
 
   boot() {
+    this.play(`mp3/${this.monsterID} boot.mp3`, 500);
     if (this.monsterID === "Korjan") {
-      // this.play('mp3/slap.mp3', 1000, 0);
-      this.play('mp3/waarisdatfeestje.mp3', 24000, 500);
-      this.led('wipe-red', 3000);
+      this.led('wipe-red', 6000);
     }
     if (this.monsterID === "Arian") {
-      this.play('mp3/feestje arian.mp3', 11000, 500);
     }
-    // this.loop();
-    // setTimeout(() => this.loop(), this.monsterID === "Arian" ? 12000 : 25000);
   }
 
   loopTimeout = null;
@@ -90,7 +94,7 @@ class Events {
     const timeout = 8000 + Math.floor(Math.random() * 5000);
     console.log('start idle loop with timeout ' + timeout);
     this.loopTimeout = setTimeout(() => {
-      const file = this.monsterID === "Arian" ? "mp3/arian idle.mp3" : "mp3/korjan-continuous.mp3";
+      const file = `mp3/${this.monsterID} idle.mp3`;
       console.log('play idle ' + file);
       // this.playing.kill();
       this.playing = this.player.play(file, function (err) {
@@ -100,6 +104,27 @@ class Events {
         that.loop();
       })
     }, timeout);
+  }
+
+  borrelHighNote() {
+    console.log('Hitting the high note, the fat lady sings');
+    if (this.monsterID === "Korjan") {
+      this.led("wipe-out");
+    }
+    if (this.monsterID === "Arian") {
+      this.fireConfetti();
+    }
+  }
+  borrelFatLadyFalls() {
+    this.borrelHighNote();
+  }
+
+  borrelOtherUserJoined() {
+    this.play(`mp3/${this.monsterID} announcement.mp3`);
+  }
+
+  borrelUserJoined() {
+    this.play(`mp3/${this.monsterID} join.mp3`);
   }
 }
 
