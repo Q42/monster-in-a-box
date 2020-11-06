@@ -4,7 +4,7 @@ const http = require('http');
 const Events = require('./events.js');
 const dbManager = require('./dbManager.js');
 
-const monsterID = 'Korjan';
+const monsterID = 'Arian';
 console.log('booting party animal ' + monsterID);
 
 var firebaseConfig = {
