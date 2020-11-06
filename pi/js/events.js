@@ -6,12 +6,17 @@ class Events {
   constructor(monsterID) {
     // Initialise the confetti object.
     this.playing = null;
+    this.joined = false;
     this.monsterID = monsterID;
     this.confetti = null;
     this.arduino = null;
     this.player = playSound({ player: 'mpg123' });
     if (this.monsterID === "Arian") {
-      this.confetti = new Confetti();
+      try {
+        this.confetti = new Confetti();
+      } catch(err) {
+        console.warn("Confetti cannon not found!");
+      }
     }
     if (this.monsterID === "Korjan") {
       this.arduino = new SerialPort('/dev/ttyUSB0', { baudRate: 9600 });
@@ -51,12 +56,14 @@ class Events {
   fireConfetti() {
     this.clearLoop();
     console.log('begin firing confetti');
-    this.confetti.startFire();
-    setTimeout(() => {
-      console.log('standing down');
-      this.confetti.stopFire();
-      this.loop();
-    }, 6000);
+    if (this.confetti) {
+      this.confetti.startFire();
+      setTimeout(() => {
+        console.log('standing down');
+        this.confetti.stopFire();
+        this.loop();
+      }, 6000);
+    }
   }
 
   /*******************
@@ -65,9 +72,10 @@ class Events {
   
   borrelFondleParrot() {
     console.log('A parrot tweets #metoo');
-    if (this.arduino) {
-      this.led("wipe-out");
-    }
+    this.play(`mp3/${this.monsterID} parrot.mp3`);
+    // if (this.arduino) {
+    //   this.led("wipe-out");
+    // }
   }
 
   boot() {
@@ -94,7 +102,7 @@ class Events {
     const timeout = 8000 + Math.floor(Math.random() * 5000);
     console.log('start idle loop with timeout ' + timeout);
     this.loopTimeout = setTimeout(() => {
-      const file = `mp3/${this.monsterID} idle.mp3`;
+      const file = `mp3/${this.monsterID} idle${this.joined ? "-joined" : ""}.mp3`;
       console.log('play idle ' + file);
       // this.playing.kill();
       this.playing = this.player.play(file, function (err) {
@@ -124,6 +132,7 @@ class Events {
   }
 
   borrelUserJoined() {
+    this.joined = true;
     this.play(`mp3/${this.monsterID} join.mp3`);
   }
 }
