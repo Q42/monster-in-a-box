@@ -4,6 +4,8 @@ const http = require('http');
 const Events = require('./events.js');
 const dbManager = require('./dbManager.js');
 
+const monsterID = 'Korjan';
+console.log('booting party animal ' + monsterID);
 
 var firebaseConfig = {
   apiKey: "AIzaSyBDVrJK2AS0wvEqbEDXYPgTcRfgCSvK_ow",
@@ -21,7 +23,7 @@ const db = firebase.firestore();
 const PORT = 3000;
 
 // Initialise Events
-const events = new Events();
+const events = new Events(monsterID);
 
 async function checkMonsterDocEntry(monsterID) {
   console.log('Checking existence of monster doc entry');
@@ -54,7 +56,6 @@ server.listen(PORT, async() => {
   console.log(`Server running on port ${PORT}.`);
 
   // Check if db entries exist. If not, create them.
-  const monsterID = 'Arian';
   await checkMonsterDocEntry(monsterID);
 
   const monster = db.collection('monsters').doc(monsterID).collection('events');
@@ -76,8 +77,5 @@ server.listen(PORT, async() => {
     console.log(`Encountered error: ${err}`);
   });
   
-  events.play('mp3/grunt.mp3', 500);
-  events.play('mp3/slap.mp3', 4000);
-  events.play('mp3/monster_gigante.mp3', 5000);
-  events.led('wipe-red', 5000);
+  events.boot();
 });
