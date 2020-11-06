@@ -65,7 +65,9 @@ server.listen(PORT, async() => {
       return;
     }
 
-    const event = evnt.docs[0].data();
+    const event = evnt.docs.sort((doc1, doc2) => {
+      return doc1.data().timestamp - doc2.data().timestamp;
+    })[evnt.size - 1].data();
     
     console.log(`Received monster snapshot: ${JSON.stringify(event)}`);
 
@@ -76,8 +78,5 @@ server.listen(PORT, async() => {
     console.log(`Encountered error: ${err}`);
   });
   
-  events.play('mp3/grunt.mp3', 500);
-  events.play('mp3/slap.mp3', 4000);
-  events.play('mp3/monster_gigante.mp3', 5000);
-  events.led('wipe-red', 5000);
+  events.wakeUp();
 });
