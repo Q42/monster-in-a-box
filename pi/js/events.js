@@ -116,6 +116,8 @@ class Events {
 
   borrelHighNote() {
     console.log('Hitting the high note, the fat lady sings');
+    this.play(`mp3/${this.monsterID} highnote.mp3`, 2000);
+    this.play(`mp3/${this.monsterID} party.mp3`);
     if (this.monsterID === "Korjan") {
       this.led("wipe-out");
     }
