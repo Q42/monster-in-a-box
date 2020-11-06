@@ -74,8 +74,19 @@ server.listen(PORT, async() => {
     if (event.type === "fondleParrot") {
       events.borrelFondleParrot();
     }
+    else if (event.type === "userJoined") {
+      if (event.newUser === monsterID) {
+        events.borrelUserJoined();
+      } else {
+        events.borrelOtherUserJoined();
+      }
+    } else if (event.type === 'fatLadyFalls') {
+      events.borrelFatLadyFalls();
+    } else {
+      console.warn(`received unknown event - type: ${event.type}`);
+    }
   }, err => {
-    console.log(`Encountered error: ${err}`);
+    console.warn(`Encountered error: ${err}`);
   });
   
   events.wakeUp();

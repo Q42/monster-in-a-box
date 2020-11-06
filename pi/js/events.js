@@ -59,6 +59,24 @@ class Events {
     console.log('A parrot tweets #metoo');
     this.fireConfetti();
   }
+
+  borrelHighNote() {
+    console.log('Hitting the high note, the fat lady sings');
+    this.fireConfetti();
+  }
+  borrelFatLadyFalls() {
+    this.borrelHighNote();
+  }
+
+  borrelOtherUserJoined() {
+    console.log(`Another user joined`);
+    this.play('mp3/grunt.mp3', 500);
+  }
+
+  borrelUserJoined() {
+    console.log(`This user joined`);
+    this.play('mp3/monster_gigante.mp3', 5000);
+  }
 }
 
 module.exports = Events;

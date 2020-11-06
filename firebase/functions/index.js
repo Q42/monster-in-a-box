@@ -17,8 +17,9 @@ exports.addMessage = cors(req, res, async () => {
 
     const doc = Object.assign({}, body, { timestamp: (+new Date()) });
     
-    if (!doc.type === 'userJoined') {
-      delete doc.user;
+    delete doc.user;
+
+    if (doc.type !== 'userJoined') {
       console.log(`pushing to /monsters/${user}/events: ${JSON.stringify(doc)}`);
       const writeResult = await admin.firestore().collection("monsters").doc(user).collection('events').add(doc);
       res.json({ id: `/monsters/${user}/events/${writeResult.id}`, doc });
